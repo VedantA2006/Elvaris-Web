@@ -19,6 +19,10 @@ const AdminDashboard = () => {
   const [faqs, setFaqs] = useState([]);
   const [blogs, setBlogs] = useState([]);
   const [users, setUsers] = useState([]);
+  const [vipMembers, setVipMembers] = useState([]);
+  const [vipTiersList, setVipTiersList] = useState([]);
+  const [vipModalOpen, setVipModalOpen] = useState(false);
+  const [vipFormData, setVipFormData] = useState({ userEmail: '', vipTierId: '', status: 'active' });
 
   // Loaders & Errors
   const [loading, setLoading] = useState(true);
@@ -83,6 +87,12 @@ const AdminDashboard = () => {
 
       const userRes = await axios.get('/api/admin/users').catch(() => null);
       if (userRes?.data?.success) setUsers(userRes.data.data);
+
+      const vipRes = await axios.get('/api/admin/vip/members').catch(() => null);
+      if (vipRes?.data?.success) {
+        setVipMembers(vipRes.data.data?.members || []);
+        setVipTiersList(vipRes.data.data?.tiers || []);
+      }
 
     } catch (err) {
       // Ignore errors for now to allow layout to render with mock data if backend is down
@@ -199,6 +209,31 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleGrantVipMembership = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post('/api/admin/vip/members', vipFormData);
+      if (res.data?.success && res.data?.data) {
+        setVipMembers(prev => [res.data.data, ...prev.filter(m => m._id !== res.data.data._id)]);
+        setVipModalOpen(false);
+        setVipFormData({ userEmail: '', vipTierId: vipTiersList[0]?._id || '', status: 'active' });
+      }
+    } catch (err) {
+      alert(err.response?.data?.error?.message || 'Failed to grant VIP membership.');
+    }
+  };
+
+  const handleUpdateVipStatus = async (id, status) => {
+    try {
+      const res = await axios.patch(`/api/admin/vip/members/${id}`, { status });
+      if (res.data?.success && res.data?.data) {
+        setVipMembers(prev => prev.map(m => m._id === id ? { ...m, status } : m));
+      }
+    } catch (err) {
+      alert(err.response?.data?.error?.message || 'Failed to update status.');
+    }
+  };
+
   const handleDeleteIndicator = async (indId) => {
     if (!confirm('Are you sure you want to delete this indicator?')) return;
     try {
@@ -218,6 +253,7 @@ const AdminDashboard = () => {
     { id: 'Payments', icon: 'account_balance_wallet', label: 'Global Payments' },
     { id: 'TV Queue', icon: 'query_stats', label: 'Access Queue' },
     { id: 'Clients', icon: 'group', label: 'Clients' },
+    { id: 'VIP Members', icon: 'workspace_premium', label: 'VIP Community' },
     { id: 'CMS', icon: 'verified', label: 'Indicators & CMS' },
     { id: 'Settings', icon: 'settings', label: 'Settings' },
   ];
@@ -568,6 +604,97 @@ const AdminDashboard = () => {
                       {users.length === 0 && (
                         <tr>
                           <td colSpan="4" className="px-6 py-8 text-center text-on-surface-variant">No users found.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* TAB: VIP Members */}
+          {activeTab === 'VIP Members' && (
+            <>
+              <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
+                <div>
+                  <h2 className="text-headline-lg font-headline-lg text-primary tracking-tighter mb-2">VIP Community Members</h2>
+                  <p className="text-body-md font-body-md text-on-surface-variant">Manage institutional pass activations and manual tier provisioning.</p>
+                </div>
+                <div className="flex items-center gap-4">
+                  <button 
+                    onClick={() => {
+                      setVipFormData({ userEmail: '', vipTierId: vipTiersList[0]?._id || '', status: 'active' });
+                      setVipModalOpen(true);
+                    }}
+                    className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2.5 text-label-sm font-label-sm text-on-primary hover:bg-on-surface transition-all font-bold"
+                  >
+                    <span className="material-symbols-outlined text-[18px] mr-2">add</span> Grant VIP Membership
+                  </button>
+                </div>
+              </div>
+
+              <div className="bg-surface-container-lowest rounded-xl border border-outline-variant ambient-shadow overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-outline-variant bg-surface-bright">
+                        <th className="px-6 py-4 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">User</th>
+                        <th className="px-6 py-4 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Tier</th>
+                        <th className="px-6 py-4 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Status</th>
+                        <th className="px-6 py-4 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Joined At</th>
+                        <th className="px-6 py-4 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider font-semibold text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-body-md font-body-md">
+                      {vipMembers.map(member => (
+                        <tr key={member._id} className="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+                          <td className="px-6 py-5">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-primary font-bold text-xs uppercase">
+                                {member.user?.name ? member.user.name[0] : 'V'}
+                              </div>
+                              <div>
+                                <p className="font-semibold text-primary">{member.user?.name || 'Unknown User'}</p>
+                                <p className="text-xs text-on-surface-variant font-mono">{member.user?.email || member.user}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-5 font-semibold text-primary">
+                            {member.vipTier?.name || 'Institutional Pass'}
+                          </td>
+                          <td className="px-6 py-5 capitalize">
+                            <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase ${
+                              member.status === 'active' ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface-variant'
+                            }`}>
+                              {member.status}
+                            </span>
+                          </td>
+                          <td className="px-6 py-5 text-on-surface-variant font-mono text-xs">
+                            {member.joinedAt ? new Date(member.joinedAt).toLocaleDateString() : 'N/A'}
+                          </td>
+                          <td className="px-6 py-5 text-right space-x-2">
+                            {member.status === 'active' ? (
+                              <button 
+                                onClick={() => handleUpdateVipStatus(member._id, 'revoked')}
+                                className="inline-flex items-center justify-center rounded border border-outline-variant px-3 py-1 text-xs font-bold text-on-surface-variant hover:border-primary hover:text-primary transition-colors font-mono"
+                              >
+                                Revoke
+                              </button>
+                            ) : (
+                              <button 
+                                onClick={() => handleUpdateVipStatus(member._id, 'active')}
+                                className="inline-flex items-center justify-center rounded bg-primary px-3 py-1 text-xs font-bold text-on-primary hover:opacity-90 transition-opacity font-mono"
+                              >
+                                Reactivate
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                      {vipMembers.length === 0 && (
+                        <tr>
+                          <td colSpan="5" className="px-6 py-8 text-center text-on-surface-variant">No VIP community members recorded yet.</td>
                         </tr>
                       )}
                     </tbody>
@@ -1112,6 +1239,66 @@ const AdminDashboard = () => {
                   </div>
                 </form>
 
+              </div>
+            </div>
+          )}
+
+          {/* Grant VIP Membership Modal */}
+          {vipModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
+              <div className="bg-surface-container-lowest border border-outline-variant rounded-2xl p-8 max-w-lg w-full ambient-shadow">
+                <div className="flex justify-between items-center mb-6 border-b border-outline-variant pb-4">
+                  <h3 className="text-headline-sm font-bold text-primary">Grant VIP Community Pass</h3>
+                  <button onClick={() => setVipModalOpen(false)} className="text-on-surface-variant hover:text-primary">
+                    <span className="material-symbols-outlined">close</span>
+                  </button>
+                </div>
+                <form onSubmit={handleGrantVipMembership} className="space-y-4">
+                  <div>
+                    <label className="block text-label-sm font-bold text-on-surface-variant uppercase tracking-wider mb-2">User Email Address</label>
+                    <input 
+                      type="email" 
+                      required 
+                      placeholder="e.g. trader@institutional.com"
+                      className="w-full bg-surface border border-outline-variant rounded-lg p-3 text-primary font-mono text-body-md focus:border-primary focus:outline-none"
+                      value={vipFormData.userEmail}
+                      onChange={e => setVipFormData({ ...vipFormData, userEmail: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-label-sm font-bold text-on-surface-variant uppercase tracking-wider mb-2">Access Tier</label>
+                    <select 
+                      className="w-full bg-surface border border-outline-variant rounded-lg p-3 text-primary font-mono text-body-md focus:border-primary focus:outline-none"
+                      value={vipFormData.vipTierId}
+                      onChange={e => setVipFormData({ ...vipFormData, vipTierId: e.target.value })}
+                    >
+                      {vipTiersList.map(tier => (
+                        <option key={tier._id} value={tier._id}>
+                          {tier.name} (${tier.entryFeeUsd} USD)
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-label-sm font-bold text-on-surface-variant uppercase tracking-wider mb-2">Initial Status</label>
+                    <select 
+                      className="w-full bg-surface border border-outline-variant rounded-lg p-3 text-primary font-mono text-body-md focus:border-primary focus:outline-none"
+                      value={vipFormData.status}
+                      onChange={e => setVipFormData({ ...vipFormData, status: e.target.value })}
+                    >
+                      <option value="active">Active (Instant Access + Welcome Email)</option>
+                      <option value="pending">Pending</option>
+                    </select>
+                  </div>
+                  <div className="flex justify-end gap-3 pt-6 border-t border-outline-variant">
+                    <button type="button" onClick={() => setVipModalOpen(false)} className="px-6 py-2.5 rounded-lg border border-outline-variant text-on-surface-variant hover:text-primary font-bold text-label-sm">
+                      Cancel
+                    </button>
+                    <button type="submit" className="px-6 py-2.5 rounded-lg bg-primary text-on-primary font-bold text-label-sm hover:opacity-90">
+                      Grant Access Now
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           )}

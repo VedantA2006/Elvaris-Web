@@ -222,3 +222,52 @@ export const sendExpiryWarning = async (userEmail, indicatorName, daysLeft) => {
 
   return await sendMail({ to: userEmail, subject, html });
 };
+
+// 4. Send VIP Community Welcome Email
+export const sendVipWelcomeEmail = async (userEmail, membership) => {
+  const subject = `Welcome to Elvaris VIP Community — Institutional Alpha Access Granted`;
+  
+  const html = `
+    <div style="background-color: #05060A; color: #E4E4E7; font-family: sans-serif; padding: 40px; max-width: 600px; margin: 0 auto; border: 1px solid #1E293B; border-radius: 12px;">
+      <h1 style="color: #00F5D4; text-align: center; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">ELVARIS INSTITUTIONAL VIP</h1>
+      <p style="text-align: center; color: #A1A1AA; font-size: 14px; margin-bottom: 30px;">Your VIP Community pass is active. You have been granted lifetime private hub access.</p>
+      
+      <div style="background-color: #0B0D14; border: 1px solid #1E293B; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+        <h3 style="margin-top: 0; color: #F4F4F5; font-size: 14px; border-bottom: 1px solid #1E293B; padding-bottom: 10px;">MEMBERSHIP STATUS</h3>
+        <table style="width: 100%; font-size: 12px; line-height: 20px;">
+          <tr>
+            <td style="color: #A1A1AA;">Access Tier:</td>
+            <td style="text-align: right; color: #F4F4F5; font-weight: bold;">Institutional VIP Community Pass</td>
+          </tr>
+          <tr>
+            <td style="color: #A1A1AA;">Status:</td>
+            <td style="text-align: right; color: #00F5D4; font-weight: bold;">ACTIVE</td>
+          </tr>
+          <tr>
+            <td style="color: #A1A1AA;">Billing Cycle:</td>
+            <td style="text-align: right; color: #F4F4F5; text-transform: uppercase;">LIFETIME / ONE-TIME</td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="background-color: #1E1B4B; border: 1px solid #4338CA; border-radius: 8px; padding: 15px; margin-bottom: 30px;">
+        <p style="margin: 0; font-size: 12px; color: #C7D2FE; line-height: 18px; text-align: center;">
+          <strong>Access Notice:</strong> Visit the VIP Community Hub right now to join institutional alpha discussions, access private liquidity maps, and connect with top quantitative traders.
+        </p>
+      </div>
+
+      <div style="text-align: center;">
+        <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/vip-community/hub" style="background: linear-gradient(90deg, #3B82F6 0%, #8B5CF6 100%); color: #ffffff; text-decoration: none; padding: 12px 24px; font-size: 12px; font-weight: bold; border-radius: 8px; display: inline-block;">
+          Enter VIP Community Hub
+        </a>
+      </div>
+      
+      <p style="font-size: 10px; color: #71717A; text-align: center; margin-top: 40px; border-top: 1px solid #1E293B; padding-top: 20px;">
+        This is an automated institutional dispatch. For support, contact support@elvaris.com.
+      </p>
+    </div>
+  `;
+
+  return await sendMail({ to: userEmail, subject, html });
+};
+

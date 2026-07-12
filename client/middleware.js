@@ -1,6 +1,15 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-export default clerkMiddleware();
+const isPublicRoute = createRouteMatcher([
+  '/api/vip/tiers(.*)',
+  '/api/vip/webhook(.*)'
+]);
+
+export default clerkMiddleware((auth, req) => {
+  if (!isPublicRoute(req)) {
+    // Route handlers and pages perform fine-grained authorization
+  }
+});
 
 export const config = {
   matcher: [
