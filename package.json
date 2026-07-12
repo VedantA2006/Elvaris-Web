@@ -1,0 +1,17 @@
+{
+  "name": "elvaris-technologies",
+  "version": "1.0.0",
+  "description": "Premium SaaS platform selling TradingView indicator access via crypto payments",
+  "main": "server/server.js",
+  "scripts": {
+    "install:all": "npm install && npm install --prefix server && npm install --prefix client",
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "start": "npm start --prefix server",
+    "build:client": "npm run build --prefix client",
+    "build:server": "npm run build --prefix server"
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "private": true
+}
