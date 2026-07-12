@@ -21,9 +21,10 @@ const Navbar = () => {
         {/* Brand */}
         <Link
           href="/"
-          className="font-display text-headline-md font-extrabold tracking-tighter text-primary"
+          className="flex items-center gap-2.5 font-display text-headline-md font-extrabold tracking-tighter text-primary"
         >
-          Elvaris
+          <img src="/logo.png" alt="Elvaris Logo" className="w-8 h-8 object-contain" />
+          <span>Elvaris</span>
         </Link>
 
         {/* Desktop Navigation */}

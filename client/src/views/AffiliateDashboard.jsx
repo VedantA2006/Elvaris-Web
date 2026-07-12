@@ -297,7 +297,10 @@ const AffiliateDashboard = () => {
             <span className="material-symbols-outlined text-sm">partner_exchange</span>
             <span>Institutional Partner Portal</span>
           </div>
-          <h1 className="text-3xl font-black text-primary tracking-tight mt-1">Affiliate Partner Dashboard</h1>
+          <div className="flex items-center gap-3 mt-1">
+            <img src="/logo.png" alt="Elvaris Logo" className="w-8 h-8 object-contain" />
+            <h1 className="text-3xl font-black text-primary tracking-tight">Affiliate Partner Dashboard</h1>
+          </div>
           <p className="text-on-surface-variant text-xs mt-1 font-stats">
             Tracking code: <span className="font-bold text-primary uppercase">@{stats.referralCode}</span> &bull; Commission Rate: <strong className="text-primary">{stats.commissionRate}%</strong>
           </p>

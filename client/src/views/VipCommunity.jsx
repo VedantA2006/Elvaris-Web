@@ -45,6 +45,9 @@ const VipCommunity = () => {
       <div className="w-full max-w-[1280px] mx-auto px-6 md:px-[64px] py-[120px] font-sans text-[#000000] space-y-[120px]">
         {/* Hero Section */}
         <header className="text-center max-w-4xl mx-auto">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <img src="/logo.png" alt="Elvaris Logo" className="w-12 h-12 object-contain" />
+          </div>
           <div className="inline-block bg-[#FFFFFF] border border-[#C4C7C7] text-[#000000] font-mono text-[12px] font-semibold px-4 py-1.5 rounded-full uppercase tracking-widest mb-6 shadow-[0_4px_20px_rgba(0,0,0,0.05)]">
             Gated Quantitative Access
           </div>

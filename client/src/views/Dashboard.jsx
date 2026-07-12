@@ -69,7 +69,10 @@ const Dashboard = () => {
     <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-section-gap font-display">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-headline-lg font-bold text-primary">Dashboard</h1>
+          <div className="flex items-center gap-3">
+            <img src="/logo.png" alt="Elvaris Logo" className="w-8 h-8 object-contain" />
+            <h1 className="text-headline-lg font-bold text-primary">Dashboard</h1>
+          </div>
           <p className="text-on-surface-variant mt-1">Welcome back, {user.fullName || 'Trader'}</p>
         </div>
         <Button variant="outline" onClick={() => signOut()} className="border-error text-error hover:bg-error-container/10">

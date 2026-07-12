@@ -35,6 +35,10 @@ const Home = () => {
       <section className="bg-primary text-on-primary py-section-gap px-margin-mobile md:px-margin-desktop relative overflow-hidden">
         <div className="max-w-container-max mx-auto grid md:grid-cols-12 gap-gutter items-center z-10 relative">
           <div className="md:col-span-6 flex flex-col gap-stack-lg">
+            <div className="flex items-center gap-3 mb-2">
+              <img src="/logo.png" alt="Elvaris Logo" className="w-10 h-10 object-contain" />
+              <span className="font-display font-extrabold tracking-widest text-sm uppercase text-on-primary/80">Elvaris Quantitative Technologies</span>
+            </div>
             <h1 className="text-headline-lg-mobile md:text-display font-display tracking-tighter font-extrabold text-on-primary">
               Professional TradingView Indicators Built For Serious Traders
             </h1>

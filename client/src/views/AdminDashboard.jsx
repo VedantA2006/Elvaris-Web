@@ -263,9 +263,7 @@ const AdminDashboard = () => {
       {/* SideNavBar */}
       <nav className="hidden md:flex flex-col bg-surface-container-lowest border-r border-outline-variant fixed left-0 top-0 h-full w-64 py-stack-lg z-50">
         <div className="px-6 mb-stack-lg flex items-center gap-3">
-          <div className="w-8 h-8 rounded bg-primary flex items-center justify-center text-on-primary">
-            <span className="material-symbols-outlined text-sm font-bold">bolt</span>
-          </div>
+          <img src="/logo.png" alt="Elvaris Logo" className="w-8 h-8 object-contain" />
           <div>
             <h1 className="text-headline-md font-headline-md font-extrabold text-primary tracking-tighter leading-none text-xl">Elvaris</h1>
             <p className="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mt-1">Technologies</p>

@@ -44,7 +44,10 @@ const Register = () => {
     <div className="bg-background min-h-screen flex items-center justify-center p-margin-mobile md:p-margin-desktop text-on-surface antialiased">
       <div className="w-full max-w-[420px] bg-surface-container-lowest border border-outline-variant rounded-xl p-8 ambient-shadow relative">
         <div className="text-center mb-8">
-          <h1 className="font-display text-headline-md font-extrabold tracking-tighter text-primary mb-2">ELVARIS</h1>
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <img src="/logo.png" alt="Elvaris Logo" className="w-10 h-10 object-contain" />
+            <h1 className="font-display text-headline-md font-extrabold tracking-tighter text-primary">ELVARIS</h1>
+          </div>
           <p className="font-display text-body-md text-on-surface-variant">Create an institutional account</p>
         </div>
 

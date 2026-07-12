@@ -34,7 +34,10 @@ const Login = () => {
       <div className="w-full max-w-[420px] bg-surface-container-lowest border border-surface-variant rounded-xl ambient-shadow p-8 md:p-10 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>
         <div className="text-center mb-8">
-          <h1 className="font-display text-headline-md text-primary font-extrabold tracking-tighter mb-2">ELVARIS</h1>
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <img src="/logo.png" alt="Elvaris Logo" className="w-10 h-10 object-contain" />
+            <h1 className="font-display text-headline-md text-primary font-extrabold tracking-tighter">ELVARIS</h1>
+          </div>
           <p className="font-display text-body-md text-secondary">Sign in to your institutional account</p>
         </div>
         

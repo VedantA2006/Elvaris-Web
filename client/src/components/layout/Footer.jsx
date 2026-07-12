@@ -7,8 +7,9 @@ const Footer = () => {
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-gutter max-w-container-max mx-auto mb-16">
         {/* Brand */}
         <div className="col-span-2 lg:col-span-2 flex flex-col gap-4 pr-8">
-          <div className="text-headline-md font-display font-black text-on-primary">
-            Elvaris
+          <div className="flex items-center gap-2.5 text-headline-md font-display font-black text-on-primary">
+            <img src="/logo.png" alt="Elvaris Logo" className="w-8 h-8 object-contain" />
+            <span>Elvaris</span>
           </div>
           <p className="text-on-primary-container text-sm">
             Professional trading indicators engineered for precision and performance.
