@@ -582,12 +582,12 @@ const AdminDashboard = () => {
             <>
               <div className="mb-10">
                 <h2 className="text-headline-lg font-headline-lg text-primary tracking-tighter mb-2">Content Management</h2>
-                <p className="text-body-md font-body-md text-on-surface-variant">Manage indicators, FAQs, and blog articles.</p>
+                <p className="text-body-md font-body-md text-on-surface-variant">Manage indicators and FAQs.</p>
               </div>
 
               <div className="flex justify-between items-center border-b border-outline-variant mb-6 pb-2">
                 <div className="flex gap-4">
-                  {['Indicators', 'FAQs', 'Blogs'].map(sub => (
+                  {['Indicators', 'FAQs'].map(sub => (
                     <button 
                       key={sub}
                       onClick={() => setCmsSubTab(sub)}
@@ -693,39 +693,6 @@ const AdminDashboard = () => {
                 </div>
               )}
 
-              {cmsSubTab === 'Blogs' && (
-                <div className="bg-surface-container-lowest rounded-xl border border-outline-variant ambient-shadow overflow-hidden">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                      <thead>
-                        <tr className="border-b border-outline-variant bg-surface-bright">
-                          <th className="px-6 py-4 text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Title</th>
-                          <th className="px-6 py-4 text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Slug</th>
-                          <th className="px-6 py-4 text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Published</th>
-                          <th className="px-6 py-4 text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold text-right">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {blogs.map(blog => (
-                          <tr key={blog._id} className="border-b border-outline-variant hover:bg-surface-container-lowest">
-                            <td className="px-6 py-5 font-semibold text-primary">{blog.title}</td>
-                            <td className="px-6 py-5 text-on-surface-variant">{blog.slug}</td>
-                            <td className="px-6 py-5 text-on-surface-variant">{blog.published ? 'Yes' : 'No'}</td>
-                            <td className="px-6 py-5 text-right">
-                              <button className="text-on-surface-variant hover:text-primary"><span className="material-symbols-outlined">edit</span></button>
-                            </td>
-                          </tr>
-                        ))}
-                        {blogs.length === 0 && (
-                          <tr>
-                            <td colSpan="4" className="px-6 py-8 text-center text-on-surface-variant">No blogs found.</td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
             </>
           )}
 

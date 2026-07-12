@@ -32,12 +32,6 @@ const Footer = () => {
         {/* Company */}
         <div className="flex flex-col gap-4">
           <h4 className="text-on-primary font-bold text-sm uppercase tracking-wider">Company</h4>
-          <Link href="/documentation" className="text-label-sm font-label-sm text-on-secondary-container hover:text-on-primary transition-all">
-            Documentation
-          </Link>
-          <Link href="/blog" className="text-label-sm font-label-sm text-on-secondary-container hover:text-on-primary transition-all">
-            Blog
-          </Link>
           <Link href="/affiliate" className="text-label-sm font-label-sm text-on-secondary-container hover:text-on-primary transition-all">
             Affiliate Program
           </Link>

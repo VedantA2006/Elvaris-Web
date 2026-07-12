@@ -9,8 +9,6 @@ const navLinks = [
   { href: '/indicators', label: 'Indicators' },
   { href: '/pricing', label: 'Pricing' },
   { href: '/performance', label: 'Performance' },
-  { href: '/documentation', label: 'Documentation' },
-  { href: '/blog', label: 'Blog' },
 ];
 
 const Navbar = () => {
