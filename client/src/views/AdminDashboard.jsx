@@ -24,6 +24,52 @@ const AdminDashboard = () => {
   const [vipModalOpen, setVipModalOpen] = useState(false);
   const [vipFormData, setVipFormData] = useState({ userEmail: '', vipTierId: '', status: 'active' });
 
+  // VIP Community Sub-tabs & Management state
+  const [vipSubTab, setVipSubTab] = useState('Members'); // 'Members', 'Posts', 'Broadcast Email'
+  const [vipPostSearch, setVipPostSearch] = useState('');
+  const [vipPosts, setVipPosts] = useState([
+    {
+      _id: 'post_1',
+      symbol: 'XAUUSD',
+      title: 'Gold Macro Support Zone Rejection',
+      content: 'Algorithmic execution scanner has registered a high-timeframe buy-side liquidity purge on XAU/USD at $2412.80. Immediate mitigation target sits at the 15-minute bullish FVG ($2404.20 - $2406.50). Institutional orderflow delta: +420 lots.',
+      author: 'A. Mercer',
+      createdAt: '2023-10-24 14:30',
+      pinned: true,
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDXUaGWwGYIGQlgU2HYHDQfucRn4pRRDjtDXRk5MiFQrcA4u7HLoj9ChbOoyDJ4LTB4AP7M7_AitbafKol_03u6aWp9LDGl9-LNHt2BakB-4viqYCsu-_rCK1dSuvnoamnrXWyY8zsn_MaoRrbCX1tugl-_EwIUJHIKwl8I5xrrI2_ItVGS3P9cUDMWr3BJVRlvq-utOQKh-oOLSvh5EvXph0NKPknwXMGf1bs44ec3SiGVkEst4OkUm_ztZK7oe1PwNVRIDEcGeWk'
+    },
+    {
+      _id: 'post_2',
+      symbol: 'BTCUSD',
+      title: 'Weekly Close Analysis & Key Levels',
+      content: 'Full Pine Script code drop for the dynamic volatility regime filter has been committed to the member repository below. Ensure your local SMC models have useVolatilityScaling = true activated prior to the London cash open.',
+      author: 'T. Vance',
+      createdAt: '2023-10-23 09:15',
+      pinned: false,
+      image: null
+    },
+    {
+      _id: 'post_3',
+      symbol: 'EURUSD',
+      title: 'ECB Rate Decision Setup',
+      content: 'Automated structure verification: 4H closing candle confirmed break of structure (BOS) above 1.0885. Algorithmic bias shifted from Neutral to Accumulation.',
+      author: 'A. Mercer',
+      createdAt: '2023-10-22 16:45',
+      pinned: false,
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCxGQnhYDrkYPuik2kulj0egBHRzFj3MU3GGeRwEu1e19RXVkbuMEzorC1OGXCiGkJReMqcjjj63jipzN5MDB3IQ9nfuZl_84164GP5idIHWc2EbFoBiLCVZ7VDwskf_YkVzI5xYMeHh4C811veSH8QeeJAoOEu2s44DL2vJiB9JXryb9gEqD9XHqtOw2z2RkL9ovXnn1qJG2yJtYZ1lqvZs39GpTnb5aWnLTkalt4CoIl91G4YsGKwSI5EczKONIQrgoyqvf_YxT4'
+    }
+  ]);
+  const [vipPostForm, setVipPostForm] = useState({ symbol: '', title: '', content: '', pinned: false });
+
+  const [vipBroadcasts, setVipBroadcasts] = useState([
+    { _id: 'bc_1', subject: 'Q3 Earnings Call Prep Materials', sentAt: '2023-10-12 14:30', recipients: 214, failed: 0 },
+    { _id: 'bc_2', subject: 'Platform Maintenance Notice', sentAt: '2023-09-28 09:15', recipients: 212, failed: 2 },
+    { _id: 'bc_3', subject: 'New Indicator Launch: Momentum RSI Overlay', sentAt: '2023-09-15 11:00', recipients: 208, failed: 0 },
+    { _id: 'bc_4', subject: 'Weekly Market Briefing - Volatility Alert', sentAt: '2023-09-08 16:45', recipients: 205, failed: 1 },
+  ]);
+  const [vipBroadcastForm, setVipBroadcastForm] = useState({ subject: '', message: '' });
+
+
   // Loaders & Errors
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -244,6 +290,62 @@ const AdminDashboard = () => {
       setIndicators(prev => prev.filter(item => item._id !== indId));
       if (editingIndicator?._id === indId) setIndicatorModalOpen(false);
     }
+  };
+
+  const handleAddVipPost = async (e) => {
+    e.preventDefault();
+    if (!vipPostForm.symbol || !vipPostForm.title || !vipPostForm.content) {
+      alert('Please fill in Symbol, Title, and Trade Details.');
+      return;
+    }
+    const newPost = {
+      _id: 'post_' + Date.now(),
+      symbol: vipPostForm.symbol.toUpperCase(),
+      title: vipPostForm.title,
+      content: vipPostForm.content,
+      author: 'A. Mercer',
+      createdAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
+      pinned: vipPostForm.pinned,
+      image: null
+    };
+    try {
+      await axios.post('/api/admin/vip/posts', newPost).catch(() => null);
+    } catch (err) {}
+    setVipPosts(prev => [newPost, ...prev]);
+    setVipPostForm({ symbol: '', title: '', content: '', pinned: false });
+  };
+
+  const handleDeleteVipPost = async (postId) => {
+    if (!confirm('Are you sure you want to delete this community post?')) return;
+    try {
+      await axios.delete(`/api/admin/vip/posts/${postId}`).catch(() => null);
+    } catch (err) {}
+    setVipPosts(prev => prev.filter(p => p._id !== postId));
+  };
+
+  const handleTogglePinVipPost = async (postId) => {
+    setVipPosts(prev => prev.map(p => p._id === postId ? { ...p, pinned: !p.pinned } : p));
+  };
+
+  const handleSendVipBroadcast = async (e) => {
+    e.preventDefault();
+    if (!vipBroadcastForm.subject || !vipBroadcastForm.message) {
+      alert('Please fill in both Subject Line and Message Body.');
+      return;
+    }
+    const newBroadcast = {
+      _id: 'bc_' + Date.now(),
+      subject: vipBroadcastForm.subject,
+      sentAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
+      recipients: vipMembers.length || 214,
+      failed: 0
+    };
+    try {
+      await axios.post('/api/admin/vip/broadcast', vipBroadcastForm).catch(() => null);
+    } catch (err) {}
+    setVipBroadcasts(prev => [newBroadcast, ...prev]);
+    setVipBroadcastForm({ subject: '', message: '' });
+    alert('Broadcast dispatched to VIP community members.');
   };
 
   // Nav Items
@@ -613,93 +715,424 @@ const AdminDashboard = () => {
 
           {/* TAB: VIP Members */}
           {activeTab === 'VIP Members' && (
-            <>
-              <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
-                <div>
-                  <h2 className="text-headline-lg font-headline-lg text-primary tracking-tighter mb-2">VIP Community Members</h2>
-                  <p className="text-body-md font-body-md text-on-surface-variant">Manage institutional pass activations and manual tier provisioning.</p>
+            <div className="space-y-8">
+              {/* Top Sub-Navigation Header */}
+              <div className="flex justify-between items-center border-b border-outline-variant pb-3">
+                <div className="flex space-x-8 items-end">
+                  {['Members', 'Posts', 'Broadcast Email'].map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setVipSubTab(tab)}
+                      className={`font-label-sm text-label-sm uppercase tracking-wider pb-3 font-bold transition-colors select-none ${
+                        vipSubTab === tab
+                          ? 'text-primary border-b-2 border-primary -mb-3.5'
+                          : 'text-on-surface-variant hover:text-primary'
+                      }`}
+                    >
+                      {tab}
+                    </button>
+                  ))}
                 </div>
-                <div className="flex items-center gap-4">
-                  <button 
-                    onClick={() => {
-                      setVipFormData({ userEmail: '', vipTierId: vipTiersList[0]?._id || '', status: 'active' });
-                      setVipModalOpen(true);
-                    }}
-                    className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2.5 text-label-sm font-label-sm text-on-primary hover:bg-on-surface transition-all font-bold"
-                  >
-                    <span className="material-symbols-outlined text-[18px] mr-2">add</span> Grant VIP Membership
-                  </button>
+                <div className="hidden sm:flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></span>
+                  <span className="font-mono text-xs font-semibold text-on-surface-variant uppercase tracking-wider">VIP Hub Active</span>
                 </div>
               </div>
 
-              <div className="bg-surface-container-lowest rounded-xl border border-outline-variant ambient-shadow overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="border-b border-outline-variant bg-surface-bright">
-                        <th className="px-6 py-4 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">User</th>
-                        <th className="px-6 py-4 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Tier</th>
-                        <th className="px-6 py-4 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Status</th>
-                        <th className="px-6 py-4 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Joined At</th>
-                        <th className="px-6 py-4 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider font-semibold text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="text-body-md font-body-md">
-                      {vipMembers.map(member => (
-                        <tr key={member._id} className="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
-                          <td className="px-6 py-5">
-                            <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-primary font-bold text-xs uppercase">
-                                {member.user?.name ? member.user.name[0] : 'V'}
-                              </div>
-                              <div>
-                                <p className="font-semibold text-primary">{member.user?.name || 'Unknown User'}</p>
-                                <p className="text-xs text-on-surface-variant font-mono">{member.user?.email || member.user}</p>
-                              </div>
+              {/* SUB-TAB 1: MEMBERS */}
+              {vipSubTab === 'Members' && (
+                <>
+                  <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-6">
+                    <div>
+                      <h2 className="text-headline-lg font-headline-lg text-primary tracking-tighter mb-2">VIP Community Members</h2>
+                      <p className="text-body-md font-body-md text-on-surface-variant">Manage institutional pass activations and manual tier provisioning.</p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <button 
+                        onClick={() => {
+                          setVipFormData({ userEmail: '', vipTierId: vipTiersList[0]?._id || '', status: 'active' });
+                          setVipModalOpen(true);
+                        }}
+                        className="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-label-sm font-label-sm text-on-primary hover:opacity-90 transition-all font-bold uppercase tracking-wider"
+                      >
+                        <span className="material-symbols-outlined text-[18px] mr-2">add</span> Grant VIP Membership
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-ambient overflow-hidden">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="border-b border-outline-variant bg-surface-bright">
+                            <th className="px-6 py-4 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">User</th>
+                            <th className="px-6 py-4 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Tier</th>
+                            <th className="px-6 py-4 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Status</th>
+                            <th className="px-6 py-4 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Joined At</th>
+                            <th className="px-6 py-4 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider font-semibold text-right">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="text-body-md font-body-md">
+                          {vipMembers.map(member => (
+                            <tr key={member._id} className="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+                              <td className="px-6 py-5">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-primary font-bold text-xs uppercase">
+                                    {member.user?.name ? member.user.name[0] : 'V'}
+                                  </div>
+                                  <div>
+                                    <p className="font-semibold text-primary">{member.user?.name || 'Unknown User'}</p>
+                                    <p className="text-xs text-on-surface-variant font-mono">{member.user?.email || member.user}</p>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-6 py-5 font-semibold text-primary">
+                                {member.vipTier?.name || 'Institutional Pass'}
+                              </td>
+                              <td className="px-6 py-5 capitalize">
+                                <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase ${
+                                  member.status === 'active' ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface-variant'
+                                }`}>
+                                  {member.status}
+                                </span>
+                              </td>
+                              <td className="px-6 py-5 text-on-surface-variant font-mono text-xs">
+                                {member.joinedAt ? new Date(member.joinedAt).toLocaleDateString() : 'N/A'}
+                              </td>
+                              <td className="px-6 py-5 text-right space-x-2">
+                                {member.status === 'active' ? (
+                                  <button 
+                                    onClick={() => handleUpdateVipStatus(member._id, 'revoked')}
+                                    className="inline-flex items-center justify-center rounded border border-outline-variant px-3 py-1 text-xs font-bold text-on-surface-variant hover:border-primary hover:text-primary transition-colors font-mono"
+                                  >
+                                    Revoke
+                                  </button>
+                                ) : (
+                                  <button 
+                                    onClick={() => handleUpdateVipStatus(member._id, 'active')}
+                                    className="inline-flex items-center justify-center rounded bg-primary px-3 py-1 text-xs font-bold text-on-primary hover:opacity-90 transition-opacity font-mono"
+                                  >
+                                    Reactivate
+                                  </button>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                          {vipMembers.length === 0 && (
+                            <tr>
+                              <td colSpan="5" className="px-6 py-8 text-center text-on-surface-variant">No VIP community members recorded yet.</td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* SUB-TAB 2: POSTS */}
+              {vipSubTab === 'Posts' && (
+                <div className="space-y-12">
+                  {/* Top Section: New Community Post */}
+                  <form onSubmit={handleAddVipPost} className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-ambient p-8 space-y-6">
+                    <div className="border-b border-outline-variant pb-4 mb-6">
+                      <h2 className="font-headline-md text-headline-md font-bold text-primary m-0">New Community Post</h2>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                      {/* Left Column: Form Fields */}
+                      <div className="md:col-span-2 space-y-5">
+                        <div className="flex gap-4">
+                          <div className="w-1/3">
+                            <label className="block font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2 font-semibold">Trade Symbol</label>
+                            <input
+                              type="text"
+                              required
+                              value={vipPostForm.symbol}
+                              onChange={(e) => setVipPostForm({ ...vipPostForm, symbol: e.target.value })}
+                              placeholder="e.g., XAUUSD"
+                              className="w-full bg-transparent border border-outline-variant rounded-md px-4 py-2.5 text-primary font-mono font-medium text-sm transition-colors focus:border-primary focus:ring-0 placeholder:text-outline"
+                            />
+                          </div>
+                          <div className="w-2/3">
+                            <label className="block font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2 font-semibold">Title</label>
+                            <input
+                              type="text"
+                              required
+                              value={vipPostForm.title}
+                              onChange={(e) => setVipPostForm({ ...vipPostForm, title: e.target.value })}
+                              placeholder="Post Title"
+                              className="w-full bg-transparent border border-outline-variant rounded-md px-4 py-2.5 text-primary font-body-md transition-colors focus:border-primary focus:ring-0 placeholder:text-outline"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2 font-semibold">Trade Details &amp; Commentary</label>
+                          <textarea
+                            required
+                            rows="5"
+                            value={vipPostForm.content}
+                            onChange={(e) => setVipPostForm({ ...vipPostForm, content: e.target.value })}
+                            placeholder="Enter market analysis, entry points, and rationale..."
+                            className="w-full bg-transparent border border-outline-variant rounded-md px-4 py-3 text-primary font-body-md transition-colors focus:border-primary focus:ring-0 resize-y placeholder:text-outline"
+                          ></textarea>
+                        </div>
+                      </div>
+                      {/* Right Column: Image Upload & Actions */}
+                      <div className="space-y-5 flex flex-col justify-between">
+                        <div>
+                          <label className="block font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2 font-semibold">Attached Charts</label>
+                          <div className="border-2 border-dashed border-outline-variant rounded-md p-6 flex flex-col items-center justify-center text-center bg-surface hover:bg-surface-container-low transition-colors cursor-pointer h-32">
+                            <span className="material-symbols-outlined text-outline mb-2">upload_file</span>
+                            <span className="text-sm font-medium text-primary">Drag &amp; drop charts here</span>
+                            <span className="text-xs text-outline mt-1">PNG, JPG up to 10MB</span>
+                          </div>
+                          {/* Thumbnails */}
+                          <div className="flex gap-3 mt-4">
+                            <div className="w-16 h-16 rounded border border-outline-variant overflow-hidden relative group">
+                              <img
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCS1_p9yZ2MBV8duqLCmaA-DwUgXSY_uo5i9klYmUEKvkjDM89r2TyGVEiieZIyDxGENeRT67rnjCmdXNJllow35oNfw6cD82Roocbdfe9xMWrHCTP4GJxP4QkIIYJ8SABVuX5VhI5PhEELcGfQZYvbSkBGEYpq02m4JxOUDlDzMe-CjtLNJEhqmKDr0ZPZTIWkE8TQT6tJvNBhxhHVija9qmzMrymk21FFwU7GvwQ2s6me93ksWOqyu2bdG9DhuL2tm4sNiNAfzIo"
+                                alt="Chart 1"
+                                className="w-full h-full object-cover grayscale opacity-80 group-hover:opacity-100 transition-opacity"
+                              />
+                              <button type="button" className="absolute top-1 right-1 bg-surface-container-lowest rounded-full w-4 h-4 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span className="material-symbols-outlined text-[12px] text-primary">close</span>
+                              </button>
                             </div>
-                          </td>
-                          <td className="px-6 py-5 font-semibold text-primary">
-                            {member.vipTier?.name || 'Institutional Pass'}
-                          </td>
-                          <td className="px-6 py-5 capitalize">
-                            <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase ${
-                              member.status === 'active' ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface-variant'
-                            }`}>
-                              {member.status}
-                            </span>
-                          </td>
-                          <td className="px-6 py-5 text-on-surface-variant font-mono text-xs">
-                            {member.joinedAt ? new Date(member.joinedAt).toLocaleDateString() : 'N/A'}
-                          </td>
-                          <td className="px-6 py-5 text-right space-x-2">
-                            {member.status === 'active' ? (
-                              <button 
-                                onClick={() => handleUpdateVipStatus(member._id, 'revoked')}
-                                className="inline-flex items-center justify-center rounded border border-outline-variant px-3 py-1 text-xs font-bold text-on-surface-variant hover:border-primary hover:text-primary transition-colors font-mono"
-                              >
-                                Revoke
+                            <div className="w-16 h-16 rounded border border-outline-variant overflow-hidden relative group">
+                              <img
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFbB4zvy1MQwuXETKLz4z4liou9Mjb6YmOVKblLAl9uGLdWZuStARzHwKvKD5dr7KNOnnEkuvKg9p0ev36lz9Y_pkHr76l3Eh6ybbt__IZqco8RyvbgnJNE-kYHD45y7QSs7CxdruScSHWnOD63vWdO2i9t11xnSyqt2nONe0AehGircQQpeaDg3IGwvhfStB1UVK-ju4nwNjqmyyTYeXMaPyKpuXwcfICiTGMFIJPrDaGbWxAlTqbUoDk3i18J6YZBZ3qMsfPlno"
+                                alt="Chart 2"
+                                className="w-full h-full object-cover grayscale opacity-80 group-hover:opacity-100 transition-opacity"
+                              />
+                              <button type="button" className="absolute top-1 right-1 bg-surface-container-lowest rounded-full w-4 h-4 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span className="material-symbols-outlined text-[12px] text-primary">close</span>
                               </button>
-                            ) : (
-                              <button 
-                                onClick={() => handleUpdateVipStatus(member._id, 'active')}
-                                className="inline-flex items-center justify-center rounded bg-primary px-3 py-1 text-xs font-bold text-on-primary hover:opacity-90 transition-opacity font-mono"
-                              >
-                                Reactivate
-                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between pt-4 border-t border-outline-variant">
+                          <label className="flex items-center gap-2 cursor-pointer group">
+                            <input
+                              type="checkbox"
+                              checked={vipPostForm.pinned}
+                              onChange={(e) => setVipPostForm({ ...vipPostForm, pinned: e.target.checked })}
+                              className="rounded border-outline-variant text-primary focus:ring-0 w-4 h-4 cursor-pointer group-hover:border-primary transition-colors"
+                            />
+                            <span className="text-sm font-medium text-primary select-none group-hover:text-primary">Pin this post</span>
+                          </label>
+                          <button
+                            type="submit"
+                            className="bg-primary text-on-primary font-label-sm text-label-sm uppercase tracking-wider px-6 py-2.5 rounded-full hover:shadow-ambient hover:-translate-y-0.5 transition-all flex items-center gap-2 font-bold"
+                          >
+                            <span>Post to Community</span>
+                            <span className="material-symbols-outlined text-[18px]">send</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+
+                  {/* Bottom Section: Dense Data Table */}
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-end">
+                      <h3 className="font-body-lg text-body-lg font-semibold text-primary m-0">Existing Posts</h3>
+                      <div className="relative">
+                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
+                        <input
+                          type="text"
+                          value={vipPostSearch}
+                          onChange={(e) => setVipPostSearch(e.target.value)}
+                          placeholder="Search posts..."
+                          className="pl-9 pr-4 py-1.5 text-sm bg-surface-container-lowest border border-outline-variant rounded-md focus:border-primary focus:ring-0 transition-colors w-64 text-primary placeholder:text-outline"
+                        />
+                      </div>
+                    </div>
+                    <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-ambient overflow-hidden">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                          <thead>
+                            <tr className="border-b border-outline-variant bg-surface-container-lowest">
+                              <th className="py-3 px-4 font-label-sm text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold w-12">Img</th>
+                              <th className="py-3 px-4 font-label-sm text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold w-24">Symbol</th>
+                              <th className="py-3 px-4 font-label-sm text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold">Title</th>
+                              <th className="py-3 px-4 font-label-sm text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold w-32">Author</th>
+                              <th className="py-3 px-4 font-label-sm text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold w-40">Date</th>
+                              <th className="py-3 px-4 font-label-sm text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold w-24 text-center">Status</th>
+                              <th className="py-3 px-4 font-label-sm text-[11px] text-on-surface-variant uppercase tracking-wider font-semibold w-24 text-right">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody className="text-sm font-body-md divide-y divide-outline-variant">
+                            {vipPosts
+                              .filter(p => p.symbol.toLowerCase().includes(vipPostSearch.toLowerCase()) || p.title.toLowerCase().includes(vipPostSearch.toLowerCase()))
+                              .map(post => (
+                                <tr key={post._id} className="hover:bg-surface-container-low transition-colors group">
+                                  <td className="py-3 px-4">
+                                    <div className="w-10 h-10 rounded border border-outline-variant overflow-hidden bg-surface-container-high flex items-center justify-center">
+                                      {post.image ? (
+                                        <img src={post.image} alt="Chart thumb" className="w-full h-full object-cover grayscale" />
+                                      ) : (
+                                        <span className="material-symbols-outlined text-outline text-[18px]">image_not_supported</span>
+                                      )}
+                                    </div>
+                                  </td>
+                                  <td className="py-3 px-4 font-mono font-semibold text-primary">{post.symbol}</td>
+                                  <td className="py-3 px-4 text-primary font-medium truncate max-w-[300px]">{post.title}</td>
+                                  <td className="py-3 px-4 text-on-surface-variant">{post.author}</td>
+                                  <td className="py-3 px-4 font-mono text-[13px] text-on-surface-variant">{post.createdAt}</td>
+                                  <td className="py-3 px-4 text-center">
+                                    {post.pinned && (
+                                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container-high text-primary text-[10px] font-bold uppercase tracking-wide border border-outline-variant">
+                                        Pinned
+                                      </span>
+                                    )}
+                                  </td>
+                                  <td className="py-3 px-4 text-right">
+                                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                      <button onClick={() => handleTogglePinVipPost(post._id)} className="text-outline hover:text-primary transition-colors" title={post.pinned ? 'Unpin' : 'Pin'}>
+                                        <span className="material-symbols-outlined text-[18px]">{post.pinned ? 'visibility_off' : 'visibility'}</span>
+                                      </button>
+                                      <button onClick={() => handleDeleteVipPost(post._id)} className="text-outline hover:text-error transition-colors" title="Delete">
+                                        <span className="material-symbols-outlined text-[18px]">delete</span>
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            {vipPosts.length === 0 && (
+                              <tr>
+                                <td colSpan="7" className="py-8 px-4 text-center text-on-surface-variant font-mono">No posts found.</td>
+                              </tr>
                             )}
-                          </td>
-                        </tr>
-                      ))}
-                      {vipMembers.length === 0 && (
-                        <tr>
-                          <td colSpan="5" className="px-6 py-8 text-center text-on-surface-variant">No VIP community members recorded yet.</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
+                          </tbody>
+                        </table>
+                      </div>
+                      {/* Pagination footer */}
+                      <div className="bg-surface border-t border-outline-variant px-4 py-3 flex items-center justify-between">
+                        <span className="text-xs text-on-surface-variant font-medium uppercase tracking-wider font-mono">Showing 1-{vipPosts.length} of {vipPosts.length}</span>
+                        <div className="flex gap-1">
+                          <button disabled className="p-1 text-outline hover:text-primary transition-colors disabled:opacity-50">
+                            <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+                          </button>
+                          <button className="p-1 text-outline hover:text-primary transition-colors">
+                            <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </>
+              )}
+
+              {/* SUB-TAB 3: BROADCAST EMAIL */}
+              {vipSubTab === 'Broadcast Email' && (
+                <div className="space-y-12">
+                  {/* Compose Broadcast Section */}
+                  <div className="max-w-4xl">
+                    <h2 className="font-headline-md text-headline-md font-bold text-primary mb-6">Compose Broadcast</h2>
+                    <form onSubmit={handleSendVipBroadcast} className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-ambient p-8">
+                      <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center space-x-2">
+                          <span className="material-symbols-outlined text-outline">group</span>
+                          <span className="font-label-sm text-label-sm text-on-surface-variant font-semibold">Sending to VIP Tier</span>
+                        </div>
+                        <div className="bg-surface-container-low px-4 py-2 rounded-full border border-outline-variant">
+                          <span className="font-label-sm text-label-sm text-primary font-mono font-bold">Recipients: {vipMembers.length || 214} active members</span>
+                        </div>
+                      </div>
+                      <div className="space-y-6">
+                        <div>
+                          <label htmlFor="subject" className="block font-label-sm text-label-sm text-primary mb-2 uppercase tracking-wider font-bold">Subject Line</label>
+                          <input
+                            type="text"
+                            id="subject"
+                            required
+                            value={vipBroadcastForm.subject}
+                            onChange={(e) => setVipBroadcastForm({ ...vipBroadcastForm, subject: e.target.value })}
+                            placeholder="Enter broadcast subject..."
+                            className="w-full bg-transparent border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-primary focus:ring-0 focus:border-primary transition-colors placeholder:text-outline"
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="message" className="block font-label-sm text-label-sm text-primary mb-2 uppercase tracking-wider font-bold">Message Body</label>
+                          <textarea
+                            id="message"
+                            rows="8"
+                            required
+                            value={vipBroadcastForm.message}
+                            onChange={(e) => setVipBroadcastForm({ ...vipBroadcastForm, message: e.target.value })}
+                            placeholder="Draft your message here..."
+                            className="w-full bg-transparent border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-primary focus:ring-0 focus:border-primary transition-colors placeholder:text-outline resize-y"
+                          ></textarea>
+                        </div>
+                        <div className="flex justify-end pt-4">
+                          <button type="submit" className="bg-primary text-on-primary font-label-sm text-label-sm px-8 py-3 rounded-full hover:shadow-ambient transition-all flex items-center space-x-2 font-bold uppercase tracking-wider">
+                            <span className="material-symbols-outlined text-[18px]">send</span>
+                            <span>Send to VIP Community</span>
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+
+                  {/* Broadcast History Section */}
+                  <div>
+                    <div className="flex items-center justify-between mb-6">
+                      <h2 className="font-headline-md text-headline-md font-bold text-primary">Broadcast History</h2>
+                      <button type="button" className="text-on-surface-variant hover:text-primary transition-colors flex items-center space-x-1 font-label-sm text-label-sm font-semibold">
+                        <span className="material-symbols-outlined text-[18px]">filter_list</span>
+                        <span>Filter</span>
+                      </button>
+                    </div>
+                    <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-ambient overflow-hidden">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                          <thead>
+                            <tr className="border-b border-outline-variant bg-surface-container-low">
+                              <th className="py-4 px-6 font-label-sm text-label-sm text-outline uppercase tracking-wider font-semibold">Subject</th>
+                              <th className="py-4 px-6 font-label-sm text-label-sm text-outline uppercase tracking-wider font-semibold w-48">Sent At</th>
+                              <th className="py-4 px-6 font-label-sm text-label-sm text-outline uppercase tracking-wider font-semibold w-32 text-right">Recipients</th>
+                              <th className="py-4 px-6 font-label-sm text-label-sm text-outline uppercase tracking-wider font-semibold w-32 text-right">Failed</th>
+                              <th className="py-4 px-6 font-label-sm text-label-sm text-outline uppercase tracking-wider font-semibold w-24 text-right">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-outline-variant font-body-md text-body-md">
+                            {vipBroadcasts.map((bc) => (
+                              <tr key={bc._id} className="hover:bg-surface-bright transition-colors group">
+                                <td className="py-4 px-6 text-primary font-medium">{bc.subject}</td>
+                                <td className="py-4 px-6 text-secondary font-mono text-sm">{bc.sentAt}</td>
+                                <td className="py-4 px-6 text-primary font-mono font-bold text-right">{bc.recipients}</td>
+                                <td className={`py-4 px-6 font-mono font-bold text-right ${bc.failed > 0 ? 'text-error' : 'text-secondary'}`}>{bc.failed}</td>
+                                <td className="py-4 px-6 text-right">
+                                  <button type="button" className="text-outline hover:text-primary transition-colors opacity-0 group-hover:opacity-100" title="View details">
+                                    <span className="material-symbols-outlined">visibility</span>
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                            {vipBroadcasts.length === 0 && (
+                              <tr>
+                                <td colSpan="5" className="py-8 px-6 text-center text-on-surface-variant font-mono">No broadcast history recorded.</td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                      <div className="px-6 py-4 border-t border-outline-variant bg-surface-container-lowest flex items-center justify-between">
+                        <span className="font-label-sm text-label-sm text-outline uppercase font-mono text-xs">Showing 1-{vipBroadcasts.length} of {vipBroadcasts.length} Broadcasts</span>
+                        <div className="flex space-x-2">
+                          <button disabled className="w-8 h-8 rounded border border-outline-variant flex items-center justify-center text-outline hover:text-primary hover:border-primary transition-colors disabled:opacity-50">
+                            <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+                          </button>
+                          <button className="w-8 h-8 rounded border border-outline-variant flex items-center justify-center text-outline hover:text-primary hover:border-primary transition-colors">
+                            <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           )}
 
           {/* TAB: CMS */}

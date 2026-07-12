@@ -43,6 +43,13 @@ const leaderboard = [
   { rank: 5, handle: '@macro_liquidity', sharpe: '2.71', winRate: '68.1%', returnPct: '+28.7%' },
 ];
 
+const hubLiveStats = [
+  { label: 'Stream Uptime', value: '99.98%', icon: 'sync', bars: [8, 8, 8, 8, 7, 8] },
+  { label: 'Active Alpha Feeds', value: '14 Scripts', icon: 'terminal', bars: [4, 5, 6, 6, 7, 8] },
+  { label: 'Avg Sharpe Ratio', value: '3.14', icon: 'trending_up', bars: [3, 4, 5, 4, 7, 8] },
+  { label: 'Orderflow Delta (24H)', value: '+$4.2M', icon: 'bar_chart', bars: [2, 3, 5, 6, 7, 8] },
+];
+
 const VipHub = () => {
   const { data: membershipData, isLoading } = useVipMembership();
   const [activeTab, setActiveTab] = useState('alpha_stream');
@@ -113,6 +120,26 @@ const VipHub = () => {
               Connect Discord VIP Role →
             </a>
           </div>
+        </div>
+
+        {/* 4-Column Live Quantitative Metrics (Performance.jsx match) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[24px]">
+          {hubLiveStats.map((s) => (
+            <div key={s.label} className="bg-[#FFFFFF] border border-[#C4C7C7] rounded-[8px] p-[24px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] flex flex-col justify-between h-[192px]">
+              <div className="flex justify-between items-start">
+                <span className="font-mono text-[12px] text-[#585F6C] uppercase font-semibold tracking-wider">{s.label}</span>
+                <span className="material-symbols-outlined text-[#747878] text-[20px]">{s.icon}</span>
+              </div>
+              <div>
+                <div className="font-mono text-[32px] font-extrabold text-[#000000] tracking-tight mb-2">{s.value}</div>
+                <div className="w-full h-8 flex items-end gap-1.5 opacity-40">
+                  {s.bars.map((h, i) => (
+                    <div key={i} className="bg-[#000000] flex-1 rounded-t-[1px]" style={{ height: `${h * 4}px` }} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Main Grid Layout */}

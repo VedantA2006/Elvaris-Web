@@ -7,6 +7,13 @@ import { useVipMembership } from '../hooks/useVipMembership';
 import api from '../lib/api';
 import Button from '../components/ui/Button';
 
+const vipStatCards = [
+  { label: 'Tracked Orderflow Volume', value: '$142.8M', icon: 'bar_chart', bars: [3, 4, 5, 5, 7, 8] },
+  { label: 'Alpha Signal Consensus', value: '68.4%', icon: 'verified_user', bars: [2, 4, 3, 6, 5, 8] },
+  { label: 'Algorithmic Stream Delta', value: '+420 Lots', icon: 'bolt', bars: [3, 2, 5, 6, 7, 8] },
+  { label: 'Recurring Entry Fees', value: '0.00% (Lifetime)', icon: 'all_inclusive', bars: [8, 8, 8, 8, 8, 8] },
+];
+
 const VipCommunity = () => {
   const router = useRouter();
   const { data: membershipData, isLoading: membershipLoading } = useVipMembership();
@@ -51,7 +58,7 @@ const VipCommunity = () => {
           <div className="inline-block bg-[#FFFFFF] border border-[#C4C7C7] text-[#000000] font-mono text-[12px] font-semibold px-4 py-1.5 rounded-full uppercase tracking-widest mb-6 shadow-[0_4px_20px_rgba(0,0,0,0.05)]">
             Gated Quantitative Access
           </div>
-          <h1 className="text-[48px] md:text-[64px] leading-[1.1] font-extrabold text-[#000000] tracking-tight mb-6">
+          <h1 className="font-display text-display text-[#000000] leading-tight font-extrabold tracking-tight mb-6">
             Institutional Quantitative VIP Community
           </h1>
           <p className="text-[18px] leading-[28px] text-[#444748] max-w-2xl mx-auto mb-10 font-normal">
@@ -85,24 +92,24 @@ const VipCommunity = () => {
           )}
         </header>
 
-        {/* Social Proof Bar */}
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          <div className="bg-[#FFFFFF] border border-[#C4C7C7] rounded-[8px] p-6 text-center shadow-[0_4px_20px_rgba(0,0,0,0.05)]">
-            <div className="text-[36px] font-bold text-[#000000] mb-1 font-mono tracking-tight">$140M+</div>
-            <div className="text-[13px] text-[#444748] font-medium uppercase tracking-wider">Tracked Orderflow Volume</div>
-          </div>
-          <div className="bg-[#FFFFFF] border border-[#C4C7C7] rounded-[8px] p-6 text-center shadow-[0_4px_20px_rgba(0,0,0,0.05)]">
-            <div className="text-[36px] font-bold text-[#000000] mb-1 font-mono tracking-tight">68.4%</div>
-            <div className="text-[13px] text-[#444748] font-medium uppercase tracking-wider">Alpha Signal Consensus</div>
-          </div>
-          <div className="bg-[#FFFFFF] border border-[#C4C7C7] rounded-[8px] p-6 text-center shadow-[0_4px_20px_rgba(0,0,0,0.05)]">
-            <div className="text-[36px] font-bold text-[#000000] mb-1 font-mono tracking-tight">24/7</div>
-            <div className="text-[13px] text-[#444748] font-medium uppercase tracking-wider">Algorithmic Stream</div>
-          </div>
-          <div className="bg-[#FFFFFF] border border-[#C4C7C7] rounded-[8px] p-6 text-center shadow-[0_4px_20px_rgba(0,0,0,0.05)]">
-            <div className="text-[36px] font-bold text-[#000000] mb-1 font-mono tracking-tight">0%</div>
-            <div className="text-[13px] text-[#444748] font-medium uppercase tracking-wider">Recurring Fees (Lifetime)</div>
-          </div>
+        {/* 4-Column Stat Cards with Bar-Sparklines (Performance.jsx match) */}
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[24px]">
+          {vipStatCards.map((s) => (
+            <div key={s.label} className="bg-[#FFFFFF] border border-[#C4C7C7] rounded-[8px] p-[24px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] flex flex-col justify-between h-[192px]">
+              <div className="flex justify-between items-start">
+                <span className="font-mono text-[12px] text-[#585F6C] uppercase font-semibold tracking-wider">{s.label}</span>
+                <span className="material-symbols-outlined text-[#747878] text-[20px]">{s.icon}</span>
+              </div>
+              <div>
+                <div className="font-mono text-[32px] md:text-[36px] font-extrabold text-[#000000] tracking-tight mb-2">{s.value}</div>
+                <div className="w-full h-8 flex items-end gap-1.5 opacity-40">
+                  {s.bars.map((h, i) => (
+                    <div key={i} className="bg-[#000000] flex-1 rounded-t-[1px]" style={{ height: `${h * 4}px` }} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
         </section>
 
         {/* Benefits Grid */}

@@ -131,7 +131,7 @@ const VipJoin = () => {
       <div className="w-full max-w-[1280px] mx-auto px-6 md:px-[64px] py-[120px] font-sans text-[#000000]">
         <div className="flex items-center justify-center gap-3 mb-12">
           <img src="/logo.png" alt="Elvaris Logo" className="w-10 h-10 object-contain" />
-          <h1 className="text-[36px] md:text-[48px] font-extrabold text-[#000000] text-center tracking-tight">VIP Institutional Checkout</h1>
+          <h1 className="font-display text-display text-[#000000] text-center tracking-tight leading-tight font-extrabold">VIP Institutional Checkout</h1>
         </div>
 
         {error && (
