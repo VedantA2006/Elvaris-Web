@@ -43,10 +43,10 @@ const Home = () => {
             </p>
             <div className="flex flex-wrap gap-4 mt-stack-md">
               <Link
-                href="/pricing"
+                href="/vip-community"
                 className="bg-surface-container-lowest text-primary text-label-sm font-label-sm px-8 py-3 rounded hover:bg-surface-container-highest transition-colors"
               >
-                Buy Now
+                VIP Access
               </Link>
               <Link
                 href="/performance"
@@ -141,7 +141,7 @@ const Home = () => {
                 className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 ambient-shadow flex flex-col items-center"
               >
                 <span className="text-secondary text-sm font-label-sm mb-2 uppercase tracking-wider">{s.label}</span>
-                <span className="text-headline-lg font-headline-lg text-primary font-black mb-4">{s.value}</span>
+                <span className="text-headline-lg font-headline-lg text-primary font-black">{s.value}</span>
                 <div className="w-full h-8 flex items-end gap-1 opacity-50 justify-center">
                   {s.bars.map((h, i) => (
                     <div key={i} className="w-2 bg-primary" style={{ height: `${h * 4}px` }} />
@@ -149,103 +149,6 @@ const Home = () => {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Preview */}
-      <section className="bg-surface-container-lowest py-section-gap px-margin-mobile md:px-margin-desktop border-t border-outline-variant">
-        <div className="max-w-container-max mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-headline-md font-headline-md text-primary tracking-tight font-bold mb-4">Institutional Access</h2>
-            <p className="text-body-lg font-body-lg text-secondary max-w-2xl mx-auto">
-              Choose the tier that fits your trading volume and commitment level.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-            {/* Monthly */}
-            <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-8 ambient-shadow flex flex-col h-full">
-              <h3 className="text-label-sm font-label-sm text-secondary mb-2 uppercase tracking-wider">Monthly</h3>
-              <div className="mb-6">
-                <span className="text-headline-lg font-headline-lg text-primary font-black">$99</span>
-                <span className="text-secondary">/mo</span>
-              </div>
-              <ul className="flex flex-col gap-4 mb-8 flex-grow">
-                <li className="flex items-center gap-2 text-body-md text-secondary">
-                  <span className="material-symbols-outlined text-primary text-sm">check</span> Full Indicator Suite
-                </li>
-                <li className="flex items-center gap-2 text-body-md text-secondary">
-                  <span className="material-symbols-outlined text-primary text-sm">check</span> Community Access
-                </li>
-                <li className="flex items-center gap-2 text-body-md text-secondary">
-                  <span className="material-symbols-outlined text-primary text-sm">check</span> Standard Support
-                </li>
-              </ul>
-              <Link
-                href="/pricing"
-                className="w-full text-center border border-primary text-primary text-label-sm font-label-sm px-6 py-3 rounded hover:bg-surface-container-highest transition-colors"
-              >
-                Subscribe
-              </Link>
-            </div>
-
-            {/* Yearly (Highlighted) */}
-            <div className="bg-primary border border-white/10 rounded-xl p-8 ambient-shadow flex flex-col h-full transform md:scale-105 z-10">
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="text-label-sm font-label-sm text-on-primary-container uppercase tracking-wider">Yearly</h3>
-                <span className="bg-white/10 text-on-primary text-xs px-2 py-1 rounded-full font-label-sm">Most Popular</span>
-              </div>
-              <div className="mb-6">
-                <span className="text-headline-lg font-headline-lg text-on-primary font-black">$799</span>
-                <span className="text-on-primary-container">/yr</span>
-              </div>
-              <ul className="flex flex-col gap-4 mb-8 flex-grow">
-                <li className="flex items-center gap-2 text-body-md text-on-primary">
-                  <span className="material-symbols-outlined text-on-primary text-sm">check</span> Everything in Monthly
-                </li>
-                <li className="flex items-center gap-2 text-body-md text-on-primary">
-                  <span className="material-symbols-outlined text-on-primary text-sm">check</span> VIP Priority Support
-                </li>
-                <li className="flex items-center gap-2 text-body-md text-on-primary">
-                  <span className="material-symbols-outlined text-on-primary text-sm">check</span> Advanced Backtesting Data
-                </li>
-                <li className="flex items-center gap-2 text-body-md text-on-primary">
-                  <span className="material-symbols-outlined text-on-primary text-sm">check</span> Save $389 annually
-                </li>
-              </ul>
-              <Link
-                href="/pricing"
-                className="w-full text-center bg-on-primary text-primary text-label-sm font-label-sm px-6 py-3 rounded hover:bg-surface-container-highest transition-colors"
-              >
-                Subscribe Now
-              </Link>
-            </div>
-
-            {/* Lifetime */}
-            <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-8 ambient-shadow flex flex-col h-full">
-              <h3 className="text-label-sm font-label-sm text-secondary mb-2 uppercase tracking-wider">Lifetime</h3>
-              <div className="mb-6">
-                <span className="text-headline-lg font-headline-lg text-primary font-black">$1999</span>
-                <span className="text-secondary">/once</span>
-              </div>
-              <ul className="flex flex-col gap-4 mb-8 flex-grow">
-                <li className="flex items-center gap-2 text-body-md text-secondary">
-                  <span className="material-symbols-outlined text-primary text-sm">check</span> All Future Updates
-                </li>
-                <li className="flex items-center gap-2 text-body-md text-secondary">
-                  <span className="material-symbols-outlined text-primary text-sm">check</span> 1-on-1 Onboarding
-                </li>
-                <li className="flex items-center gap-2 text-body-md text-secondary">
-                  <span className="material-symbols-outlined text-primary text-sm">check</span> API Access (Beta)
-                </li>
-              </ul>
-              <Link
-                href="/pricing"
-                className="w-full text-center border border-primary text-primary text-label-sm font-label-sm px-6 py-3 rounded hover:bg-surface-container-highest transition-colors"
-              >
-                Buy Lifetime
-              </Link>
-            </div>
           </div>
         </div>
       </section>
@@ -260,7 +163,7 @@ const Home = () => {
             Join thousands of serious traders leveraging institutional-grade tools to refine their edge.
           </p>
           <Link
-            href="/pricing"
+            href="/vip-community"
             className="bg-on-primary text-primary text-label-sm font-label-sm px-10 py-4 rounded hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 mt-stack-md"
           >
             Get Started Immediately

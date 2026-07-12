@@ -7,7 +7,6 @@ import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from '@cl
 
 const navLinks = [
   { href: '/indicators', label: 'Indicators' },
-  { href: '/pricing', label: 'Pricing' },
   { href: '/performance', label: 'Performance' },
   { href: '/vip-community', label: 'VIP Community' },
 ];

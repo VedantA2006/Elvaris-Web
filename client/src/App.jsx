@@ -6,7 +6,6 @@ import PublicLayout from './layouts/PublicLayout.jsx';
 import Home from './pages/Home.jsx';
 import Indicators from './pages/Indicators.jsx';
 import IndicatorDetail from './pages/IndicatorDetail.jsx';
-import Pricing from './pages/Pricing.jsx';
 import Performance from './pages/Performance.jsx';
 import Docs from './pages/Docs.jsx';
 import Blog from './pages/Blog.jsx';
@@ -49,7 +48,6 @@ function App() {
           <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
           <Route path="/indicators" element={<PublicLayout><Indicators /></PublicLayout>} />
           <Route path="/indicators/:slug" element={<PublicLayout><IndicatorDetail /></PublicLayout>} />
-          <Route path="/pricing" element={<PublicLayout><Pricing /></PublicLayout>} />
           <Route path="/performance" element={<PublicLayout><Performance /></PublicLayout>} />
           <Route path="/documentation" element={<PublicLayout><Docs /></PublicLayout>} />
           <Route path="/blog" element={<PublicLayout><Blog /></PublicLayout>} />

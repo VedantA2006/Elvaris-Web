@@ -24,8 +24,8 @@ const Footer = () => {
           <Link href="/performance" className="text-label-sm font-label-sm text-on-secondary-container hover:text-on-primary transition-all">
             Performance Metrics
           </Link>
-          <Link href="/pricing" className="text-label-sm font-label-sm text-on-secondary-container hover:text-on-primary transition-all">
-            Pricing Plans
+          <Link href="/vip-community" className="text-label-sm font-label-sm text-on-secondary-container hover:text-on-primary transition-all">
+            VIP Community
           </Link>
         </div>
 
